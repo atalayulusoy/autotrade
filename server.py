@@ -552,6 +552,53 @@ EXCHANGES = [
 # =========================
 app = Flask(__name__)
 app.secret_key = SESSION_SECRET
+
+CORS_ORIGINS = [
+    origin.strip()
+    for origin in os.getenv("CORS_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173").split(",")
+    if origin.strip()
+]
+
+def _cors_origin():
+    origin = request.headers.get("Origin")
+    if not origin:
+        return None
+    if "*" in CORS_ORIGINS:
+        return origin
+    if origin in CORS_ORIGINS:
+        return origin
+    return None
+
+@app.before_request
+def _cors_preflight():
+    if request.method != "OPTIONS":
+        return None
+    resp = app.make_response(("", 204))
+    origin = _cors_origin()
+    if origin:
+        resp.headers["Access-Control-Allow-Origin"] = origin
+        resp.headers["Access-Control-Allow-Credentials"] = "true"
+        resp.headers["Access-Control-Allow-Headers"] = request.headers.get(
+            "Access-Control-Request-Headers",
+            "Content-Type, Authorization",
+        )
+        resp.headers["Access-Control-Allow-Methods"] = request.headers.get(
+            "Access-Control-Request-Method",
+            "GET, POST, PUT, PATCH, DELETE, OPTIONS",
+        )
+        resp.headers["Vary"] = "Origin"
+    return resp
+
+@app.after_request
+def _cors_headers(resp):
+    origin = _cors_origin()
+    if origin:
+        resp.headers["Access-Control-Allow-Origin"] = origin
+        resp.headers["Access-Control-Allow-Credentials"] = "true"
+        resp.headers["Access-Control-Expose-Headers"] = "Content-Disposition"
+        resp.headers["Vary"] = "Origin"
+    return resp
+
 @app.get("/api/signals/pending")
 def api_signals_pending_list():
     # UI bekliyor, demo icin bos donuyoruz
@@ -679,6 +726,66 @@ def api_public_ohlc():
         return jsonify(data)
     except Exception as e:
         return jsonify({"symbol": symbol, "tf": tf, "candles": [], "error": "ohlc_fetch_failed"}), 500
+
+@app.get("/api/public/ticker")
+def api_public_ticker():
+    """Public ticker snapshot for UI price updates."""
+    symbols_raw = (request.args.get("symbols") or "").strip()
+    symbols = [s.strip().upper() for s in symbols_raw.split(",") if s.strip()]
+
+    cached = get_coingecko_ticker_cached()
+    prices = cached.get("prices") or {}
+    usdt_try = float(cached.get("usdt_try") or 0.0)
+
+    if symbols:
+        filtered = {s: prices.get(s) for s in symbols if prices.get(s)}
+    else:
+        filtered = prices
+
+    return jsonify({
+        "ok": True,
+        "usdt_try": usdt_try,
+        "prices": filtered,
+        "ts": cached.get("ts"),
+    })
+
+@app.get("/api/public/ai-recommendations")
+def api_public_ai_recommendations():
+    """Rule-based mock AI recommendations (no external AI dependency)."""
+    symbols_raw = (request.args.get("symbols") or "").strip()
+    symbols = [s.strip().upper() for s in symbols_raw.split(",") if s.strip()]
+
+    cached = get_coingecko_ticker_cached()
+    prices = cached.get("prices") or {}
+    usdt_try = float(cached.get("usdt_try") or 0.0)
+
+    if not symbols:
+        symbols = list(prices.keys())[:10]
+
+    recs = []
+    for sym in symbols:
+        px = float(prices.get(sym) or 0.0)
+        if px <= 0:
+            continue
+        base_hash = sum(ord(c) for c in sym)
+        confidence = 60 + (base_hash % 26)  # 60-85
+        signal = "BUY" if base_hash % 2 == 0 else "SELL"
+        profit_target = 2.0 + ((base_hash % 5) * 0.5)
+        stop_loss = 1.5 + ((base_hash % 4) * 0.5)
+
+        recs.append({
+            "symbol": sym,
+            "signal_type": signal,
+            "entry_price": px,
+            "confidence": confidence,
+            "profit_target_percent": profit_target,
+            "stop_loss_percent": stop_loss,
+            "analysis_summary": "Piyasa momentumu ve likidite skorları baz alınarak oluşturuldu.",
+            "risk_level": "Düşük" if confidence >= 80 else "Orta",
+            "usdt_try": usdt_try,
+        })
+
+    return jsonify({"ok": True, "recommendations": recs})
 
 # =========================
 # DEMO (Paper Trading) Engine - Supabase yok

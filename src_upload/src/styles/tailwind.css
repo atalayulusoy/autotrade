@@ -1,0 +1,204 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  /* Mobile Touch Optimization */
+  .min-h-touch {
+    min-height: 44px;
+  }
+  
+  .min-w-touch {
+    min-width: 44px;
+  }
+  
+  .touch-manipulation {
+    touch-action: manipulation;
+  }
+  
+  /* Responsive Typography */
+  .text-responsive-h1 {
+    @apply text-2xl sm:text-3xl lg:text-4xl;
+  }
+  
+  .text-responsive-h2 {
+    @apply text-xl sm:text-2xl lg:text-3xl;
+  }
+  
+  .text-responsive-h3 {
+    @apply text-lg sm:text-xl lg:text-2xl;
+  }
+  
+  .text-responsive-body {
+    @apply text-sm sm:text-base;
+  }
+  
+  /* Mobile Card Styles */
+  .card-mobile {
+    @apply bg-card border border-border rounded-lg p-4 sm:p-6 shadow-sm;
+  }
+  
+  .card-mobile-compact {
+    @apply bg-card border border-border rounded-lg p-3 sm:p-4 shadow-sm;
+  }
+  
+  /* Mobile Button Styles */
+  .btn-touch-primary {
+    @apply min-h-touch px-4 py-2.5 bg-primary text-primary-foreground rounded-lg font-medium transition-all active:scale-95 touch-manipulation;
+  }
+  
+  .btn-touch-secondary {
+    @apply min-h-touch px-4 py-2.5 bg-card border border-border text-foreground rounded-lg font-medium transition-all hover:bg-muted active:scale-95 touch-manipulation;
+  }
+  
+  .btn-touch-icon {
+    @apply min-h-touch min-w-touch flex items-center justify-center rounded-lg bg-card border border-border transition-all hover:bg-muted active:scale-95 touch-manipulation;
+  }
+  
+  /* Mobile Grid Layouts */
+  .grid-mobile-1 {
+    @apply grid grid-cols-1 gap-3 sm:gap-4;
+  }
+  
+  .grid-mobile-2 {
+    @apply grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4;
+  }
+  
+  .grid-mobile-3 {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4;
+  }
+  
+  .grid-mobile-4 {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4;
+  }
+  
+  /* Mobile Spacing */
+  .space-mobile {
+    @apply space-y-3 sm:space-y-4 lg:space-y-6;
+  }
+  
+  .gap-mobile {
+    @apply gap-3 sm:gap-4 lg:gap-6;
+  }
+  
+  /* Mobile Scrollable Containers */
+  .scroll-mobile {
+    @apply overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0;
+  }
+  
+  .scroll-mobile-y {
+    @apply overflow-y-auto max-h-[60vh] sm:max-h-[70vh];
+  }
+  
+  /* Mobile Table Wrapper */
+  .table-mobile-wrapper {
+    @apply overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0;
+  }
+  
+  .table-mobile {
+    @apply min-w-full text-sm;
+  }
+  
+  /* Mobile Form Elements */
+  .input-mobile {
+    @apply w-full min-h-touch px-3 py-2 bg-background border border-border rounded-lg text-foreground text-base;
+  }
+  
+  .select-mobile {
+    @apply w-full min-h-touch px-3 py-2 bg-background border border-border rounded-lg text-foreground text-base appearance-none;
+  }
+  
+  /* Mobile Modal */
+  .modal-mobile {
+    @apply fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4;
+  }
+  
+  .modal-content-mobile {
+    @apply w-full sm:max-w-lg bg-card rounded-t-2xl sm:rounded-2xl shadow-xl max-h-[90vh] overflow-y-auto;
+  }
+  
+  /* Mobile Safe Areas */
+  .pb-safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 1rem);
+  }
+  
+  .pt-safe-top {
+    padding-top: env(safe-area-inset-top, 1rem);
+  }
+  
+  /* Mobile Chart Container */
+  .chart-mobile {
+    @apply w-full h-64 sm:h-80 lg:h-96;
+  }
+  
+  /* Mobile Tabs */
+.tabs-mobile  {
+    @apply flex overflow-x-auto gap-2 pb-2 -mx-4 px-4 sm:mx-0 sm:px-0;
+  }
+  
+  .tab-mobile {
+    @apply min-h-touch px-4 py-2 rounded-lg whitespace-nowrap text-sm font-medium transition-all touch-manipulation;
+  }
+  
+  /* Mobile Stats Card */
+  .stat-card-mobile {
+    @apply card-mobile-compact flex flex-col gap-2;
+  }
+  
+  /* Scrollbar Styles */
+  .scrollbar-thin::-webkit-scrollbar {
+    height: 4px;
+    width: 4px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 2px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground));
+  }
+  
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Mobile Flex Utilities */
+  .flex-mobile-col {
+    @apply flex flex-col gap-3 sm:gap-4;
+  }
+  
+  .flex-mobile-row {
+    @apply flex flex-col sm:flex-row gap-3 sm:gap-4;
+  }
+  
+  /* Mobile Text Truncation */
+  .truncate-mobile {
+    @apply truncate sm:whitespace-normal;
+  }
+  
+  /* Mobile Visibility */
+  .mobile-only {
+    @apply block sm:hidden;
+  }
+  
+  .desktop-only {
+    @apply hidden sm:block;
+  }
+}
